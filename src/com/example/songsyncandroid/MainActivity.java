@@ -22,8 +22,9 @@ public class MainActivity extends ActionBarActivity {
     private static ArrayList<String> listOfSongsOldMaster=new ArrayList<String>();
     private static ProgressBar totalsongssyncedbar;
     private static GUI gui;
-    private TextView actioninfo;
-    private TextView songname;
+    private static TextView actioninfo;
+    private static TextView songname;
+    private static ProgressBar singlesongdownloadprogress;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,11 +33,12 @@ public class MainActivity extends ActionBarActivity {
         
         
         totalsongssyncedbar = (ProgressBar) findViewById(R.id.totalsongssyncedbar);
+        singlesongdownloadprogress = (ProgressBar) findViewById(R.id.singlesongdownloadprogress);
         sync= (Button) findViewById(R.id.button1);//get button
         actioninfo = (TextView) findViewById(R.id.actioninfo);
         songname = (TextView) findViewById(R.id.songname);
         
-        gui=new GUI(this,totalsongssyncedbar,actioninfo,songname);
+        gui=new GUI(this,totalsongssyncedbar,actioninfo,songname,singlesongdownloadprogress);
         
         sync.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,7 +49,7 @@ public class MainActivity extends ActionBarActivity {
                     try {
                         loadPreviousSongList();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        gui.reportError("Unable to read the song list. Starting anew.");
                     }
                     new SyncWithPC(listOfSongsOldMaster,gui).start();
                 }

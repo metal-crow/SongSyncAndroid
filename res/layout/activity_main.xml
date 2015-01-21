@@ -29,20 +29,29 @@
         android:id="@+id/actioninfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/button1"
         android:layout_below="@+id/totalsongssyncedbar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="36dp"
-        android:text=""
+        android:layout_marginTop="22dp"
+        android:text="ACTIONNAME"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ProgressBar
+        android:id="@+id/singlesongdownloadprogress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/songname"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp" />
 
     <TextView
         android:id="@+id/songname"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/totalsongssyncedbar"
         android:layout_below="@+id/actioninfo"
-        android:layout_marginTop="46dp"
-        android:layout_toRightOf="@+id/button1"
-        android:text=""
+        android:layout_marginTop="30dp"
+        android:text="SONGNAME"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

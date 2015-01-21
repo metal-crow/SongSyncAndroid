@@ -5,9 +5,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -28,6 +28,9 @@ public class SyncWithPC extends Thread{
     @Override
     public void run() {
         try{
+            //tell view we are trying to connect
+            gui.waiting("Connecting to PC");
+            
             //emulator address is "10.0.2.2"
             Socket pcconnection=new Socket("10.0.2.2", 9091);
     
@@ -39,7 +42,7 @@ public class SyncWithPC extends Thread{
             mastersonglist.delete();
             
             //tell the view we are downloading the song list
-            gui.recievingSongList();
+            gui.waiting("Downloading Song List");
             
             //Use FileWriter which can write without calling .close() because if we have a disconnect we still keep the records of the songs that did sync.
             FileWriter mastersonglistwrite=new FileWriter(mastersonglist);
@@ -89,12 +92,14 @@ public class SyncWithPC extends Thread{
                     System.out.println("requesting "+reqsong);
                     
                 //inform view we are downloading song
-                gui.songAction(reqsongid,reqsong.substring(reqsong.lastIndexOf("/")),"Downloading song");
+                gui.songAction(reqsongid,reqsong.substring(reqsong.lastIndexOf("/")+1),"Downloading song");
                 
                 //Receive the length of the song in bytes
                 String songlength=in.readLine();
                     //System.out.println("recived length "+songlength);
                 byte[] song=new byte[Integer.valueOf(songlength)];
+                //amount to download for single song
+                gui.singleSongDownloadProgressMax(song.length);
                 
                 //return ready to receive song bytes
                 out.println("READY");
@@ -103,9 +108,10 @@ public class SyncWithPC extends Thread{
                 int count=0;
                 while(count<song.length){
                     count+=is.read(song,count,song.length-count);
+                    //current download progress
+                    gui.singleSongDownloadProgress(count);
                 }
                     System.out.println("recived song "+count);
-                    
                     
                 //write the song to storage
                 //make the directories the file is in
@@ -132,9 +138,13 @@ public class SyncWithPC extends Thread{
             
             pcconnection.close();
             
-        }catch(IOException e){
+        }catch(ConnectException e){
+            gui.reportError("Connection timedout. Is the server available?");
+        }catch(Exception e){
             e.printStackTrace();
+            gui.reportError(e.getMessage());
         }
+        gui.resetUI();
     }
 
 }
