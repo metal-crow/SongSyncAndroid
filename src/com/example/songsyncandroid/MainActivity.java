@@ -13,39 +13,50 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity {
     
-    Button sync;
-    ArrayList<String> listOfSongsOldMaster=new ArrayList<String>();
+    private static Button sync;
+    private static ArrayList<String> listOfSongsOldMaster=new ArrayList<String>();
+    private static ProgressBar totalsongssyncedbar;
+    private static GUI gui;
+    private TextView actioninfo;
+    private TextView songname;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        //load previous list of songs (if it exists)
-        try {
-            loadPreviousSongList();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         
+        totalsongssyncedbar = (ProgressBar) findViewById(R.id.totalsongssyncedbar);
         sync= (Button) findViewById(R.id.button1);//get button
+        actioninfo = (TextView) findViewById(R.id.actioninfo);
+        songname = (TextView) findViewById(R.id.songname);
+        
+        gui=new GUI(this,totalsongssyncedbar,actioninfo,songname);
+        
         sync.setOnClickListener(new View.OnClickListener() {
-            
             @Override
             public void onClick(View v) {
                 //dont sync unless we have mounted storage
                 if(v==sync && Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
-                    new SyncWithPC(listOfSongsOldMaster).start();
+                    //load previous list of songs (if it exists)
+                    try {
+                        loadPreviousSongList();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    new SyncWithPC(listOfSongsOldMaster,gui).start();
                 }
                 
             }
         });
         
     }
-
+    
     /**
      * Load the previous master list from storage.
      * @throws IOException If some IO error occurs (storage dismounted in reading)
@@ -83,4 +94,5 @@ public class MainActivity extends ActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+    
 }

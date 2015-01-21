@@ -16,4 +16,33 @@
         android:layout_centerVertical="true"
         android:text="Sync with PC" />
 
+    <ProgressBar
+        android:id="@+id/totalsongssyncedbar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="17dp" />
+
+    <TextView
+        android:id="@+id/actioninfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/totalsongssyncedbar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="36dp"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/songname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/actioninfo"
+        android:layout_marginTop="46dp"
+        android:layout_toRightOf="@+id/button1"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
 </RelativeLayout>

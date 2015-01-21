@@ -2,7 +2,6 @@ package com.example.songsyncandroid;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -11,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import android.os.Environment;
 
@@ -19,10 +17,12 @@ public class SyncWithPC extends Thread{
 
     private ArrayList<String> listOfSongsToRemove;
     private ArrayList<String> listOfSongsToAdd;
+    private GUI gui;
     
-    public SyncWithPC(ArrayList<String> listOfSongsOldMaster) {
+    public SyncWithPC(ArrayList<String> listOfSongsOldMaster, GUI gui) {
         this.listOfSongsToRemove=listOfSongsOldMaster;
         listOfSongsToAdd=new ArrayList<String>();
+        this.gui=gui;
     }
     
     @Override
@@ -35,7 +35,11 @@ public class SyncWithPC extends Thread{
             PrintWriter out=new PrintWriter(pcconnection.getOutputStream(), true);
             //write new master song list to txt ONLY when we receive them. This stops sync failures after disconnects.
             File mastersonglist=new File(Environment.getExternalStorageDirectory()+"/SongSync/SongSync_Song_List.txt");
+            //delete old list. TODO: if we get a disconnect in between here and before we finish receiving the new master list, lots of redundant downloading will occur next time.
             mastersonglist.delete();
+            
+            //tell the view we are downloading the song list
+            gui.recievingSongList();
             
             //Use FileWriter which can write without calling .close() because if we have a disconnect we still keep the records of the songs that did sync.
             FileWriter mastersonglistwrite=new FileWriter(mastersonglist);
@@ -61,22 +65,35 @@ public class SyncWithPC extends Thread{
                 recieve=in.readLine();
             }
             
+            //tell the view the number of songs to remove
+            gui.totalNumberofSongs(listOfSongsToRemove.size());
+            
             //remove all the songs to be removed
-            for(String song:listOfSongsToRemove){
+            for(int songid=0;songid<listOfSongsToRemove.size();songid++){
+                String song=listOfSongsToRemove.get(songid);
+                gui.songAction(songid,song.substring(song.lastIndexOf("/")),"Removing song");//tell view we are removing song
                 new File(Environment.getExternalStorageDirectory()+"/SongSync/Music/"+song).delete();
             }
+            
+            //tell the view the number of songs we have to download 
+            gui.totalNumberofSongs(listOfSongsToAdd.size());
                         
             //send server list of requested songs
             //for every request wait to receive the song before sending the next request
             //TODO need support for resending if not gotten
             BufferedInputStream is = new BufferedInputStream(pcconnection.getInputStream());
-            for(String reqsong:listOfSongsToAdd){
+            for(int reqsongid=0;reqsongid<listOfSongsToAdd.size();reqsongid++){
+                String reqsong=listOfSongsToAdd.get(reqsongid);
+                //send song request
                 out.println(reqsong);
                     System.out.println("requesting "+reqsong);
+                    
+                //inform view we are downloading song
+                gui.songAction(reqsongid,reqsong.substring(reqsong.lastIndexOf("/")),"Downloading song");
                 
-                //recieve the length of the song in bytes
+                //Receive the length of the song in bytes
                 String songlength=in.readLine();
-                    System.out.println("recived length "+songlength);
+                    //System.out.println("recived length "+songlength);
                 byte[] song=new byte[Integer.valueOf(songlength)];
                 
                 //return ready to receive song bytes
@@ -111,6 +128,8 @@ public class SyncWithPC extends Thread{
             mastersonglistwrite.close();
             
             System.out.println("Sync finished");
+            gui.songAction(listOfSongsToAdd.size(),"","Finished Downloading");
+            
             pcconnection.close();
             
         }catch(IOException e){
