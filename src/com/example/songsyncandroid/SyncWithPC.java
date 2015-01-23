@@ -98,10 +98,14 @@ public class SyncWithPC extends Thread{
      * @throws IOException 
      */
     private void downloadandRequestASong(FileWriter mastersonglistwrite, PrintWriter out, BufferedReader in, BufferedInputStream is, int reqsongid) throws IOException {
-        String reqsong=listOfSongsToAdd.get(reqsongid);
+        String reqsongOrig=listOfSongsToAdd.get(reqsongid);
+
+        //TODO for now im hardcoding that the song is an mp3, but in the future the filetype will have to be gotten from the server before downloading all the songs, so we know here
+        String reqsong=reqsongOrig.replace(reqsongOrig.substring(reqsongOrig.lastIndexOf(".")), ".mp3");
+        
         //send song request
-        out.println(reqsong);
-            System.out.println("requesting "+reqsong);
+        out.println(reqsongOrig);
+            System.out.println("requesting "+reqsongOrig);
             
         //inform view we are downloading song
         gui.songAction(reqsongid,reqsong.substring(reqsong.lastIndexOf("/")+1),"Downloading song");
@@ -137,7 +141,7 @@ public class SyncWithPC extends Thread{
         writesong.close();
         
         //write the song we just received to the master list
-        mastersonglistwrite.write(reqsong+"\n");
+        mastersonglistwrite.write(reqsongOrig+"\n");
         mastersonglistwrite.flush();//do not close
     }
 
