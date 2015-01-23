@@ -111,14 +111,19 @@ public class SyncWithPC extends Thread{
         gui.songAction(reqsongid,reqsong.substring(reqsong.lastIndexOf("/")+1),"Downloading song");
         
         //Receive the length of the song in bytes
-        String songlength=in.readLine();
+        String songlength=null;
+        do{
+            //since the server must convert before sending this, wait and listen until we receive the length
+            songlength=in.readLine();
+        }while(songlength==null);
+        
+        //return ready to receive song bytes
+        out.println("READY");
+        
             //System.out.println("recived length "+songlength);
         byte[] song=new byte[Integer.valueOf(songlength)];
         //amount to download for single song
         gui.singleSongDownloadProgressMax(song.length);
-        
-        //return ready to receive song bytes
-        out.println("READY");
         
         //Receive the song in bytes (split into multiple packets)
         int count=0;
