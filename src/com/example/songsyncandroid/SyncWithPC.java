@@ -107,8 +107,8 @@ public class SyncWithPC extends Thread{
         out.println(reqsongOrig);
             System.out.println("requesting "+reqsongOrig);
             
-        //inform view we are downloading song
-        gui.songAction(reqsongid,reqsong.substring(reqsong.lastIndexOf("/")+1),"Downloading song");
+        //inform view we are waiting for the server to finish converting the song and adding the metadata
+        gui.waiting("Waiting for song to be converted...");
         
         //Receive the length of the song in bytes
         String songlength=null;
@@ -119,6 +119,9 @@ public class SyncWithPC extends Thread{
         
         //return ready to receive song bytes
         out.println("READY");
+        
+        //inform view we are downloading song
+        gui.songAction(reqsongid,reqsong.substring(reqsong.lastIndexOf("/")+1),"Downloading song");
         
             //System.out.println("recived length "+songlength);
         byte[] song=new byte[Integer.valueOf(songlength)];
