@@ -116,4 +116,19 @@ public class GUI extends Thread{
             }
         });
     }
+
+    /**
+     * Same as waiting, but for the single song progress bar. Also add the song name.
+     * @param string
+     */
+    public void waitingSong(final String action, final String songname) {
+        c.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                    singlesongdownloadprogress.setIndeterminate(true);
+                    actioninfo.setText(action);
+                    songnameTV.setText(songname);
+            }
+        });
+    }
 }

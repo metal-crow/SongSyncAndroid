@@ -44,7 +44,7 @@ public class SyncWithPC extends Thread{
             gui.waiting("Downloading Song List");
 
             //Use FileWriter which can write without calling .close() because if we have a disconnect we still keep the records of the songs that did sync.
-            FileWriter mastersonglistwrite=new FileWriter(mastersonglist);
+            FileWriter mastersonglistwrite=new FileWriter(mastersonglist,false);
             
             downloadSongList(mastersonglist, in, mastersonglistwrite);
             
@@ -74,7 +74,6 @@ public class SyncWithPC extends Thread{
             out.close();
             mastersonglistwrite.close();
             
-            System.out.println("Sync finished");
             gui.songAction(listOfSongsToAdd.size(),"","Finished Downloading");
             
             pcconnection.close();
@@ -105,10 +104,9 @@ public class SyncWithPC extends Thread{
         
         //send song request
         out.println(reqsongOrig);
-            System.out.println("requesting "+reqsongOrig);
             
         //inform view we are waiting for the server to finish converting the song and adding the metadata
-        gui.waiting("Waiting for song to be converted...");
+        gui.waitingSong("Waiting for song to be converted...",reqsong.substring(reqsong.lastIndexOf("/")+1));
         
         //Receive the length of the song in bytes
         String songlength=null;
@@ -123,7 +121,7 @@ public class SyncWithPC extends Thread{
         //inform view we are downloading song
         gui.songAction(reqsongid,reqsong.substring(reqsong.lastIndexOf("/")+1),"Downloading song");
         
-            //System.out.println("recived length "+songlength);
+        //System.out.println("recived length "+songlength);
         byte[] song=new byte[Integer.valueOf(songlength)];
         //amount to download for single song
         gui.singleSongDownloadProgressMax(song.length);
@@ -135,7 +133,6 @@ public class SyncWithPC extends Thread{
             //current download progress
             gui.singleSongDownloadProgress(count);
         }
-            System.out.println("recived song "+count);
             
         //write the song to storage
         //make the directories the file is in
@@ -181,9 +178,6 @@ public class SyncWithPC extends Thread{
             recieve=in.readLine();
         }
         
-        
-        //delete old list. 
-        mastersonglist.delete();
         //only flush the buffered write stream after we have finished receiving the master list again. this prevents loss of master list
         mastersonglistwrite.flush();
     }
