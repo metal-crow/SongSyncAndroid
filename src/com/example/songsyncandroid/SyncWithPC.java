@@ -68,7 +68,53 @@ public class SyncWithPC extends Thread{
             for(int reqsongid=0;reqsongid<listOfSongsToAdd.size();reqsongid++){
                 downloadandRequestASong(mastersonglistwrite, out, in, is, reqsongid);
             }
-
+            out.println("END OF SONG DOWNLOADS");
+            
+            //read the playlists
+            String line="";
+            String playlistTitle=null;
+            ArrayList<Pair<String,ArrayList<String>>> Array_of_List_Of_Playlists = new ArrayList<Pair<String,ArrayList<String>>>();
+            ArrayList<String> playlist_Songs=new ArrayList<String>();
+            gui.waiting("Downloading Playlists");
+            while(!line.equals("NO MORE PLAYLISTS")){
+                //wait to receive the playlist title
+                line=in.readLine();
+                
+                //when we receive the title
+                if(playlistTitle==null && line!=null && !line.equals("")){
+                    playlistTitle=line;
+                }
+                //when we are receiving the songs
+                else if(playlistTitle!=null && !line.equals("NEW LIST")){
+                    //make sure that the file extension matches what we are converting to
+                    //TODO temporary hardcoding of mp3
+                    playlist_Songs.add(Environment.getExternalStorageDirectory()+"/SongSync/Music/"+line.substring(0,line.lastIndexOf("."))+".mp3");
+                }
+                
+                //at the end of this particular playlist, add the list and title to the Array_of_List_Of_Playlists and reset the title and list 
+                else if(line.equals("NEW LIST")){
+                    Array_of_List_Of_Playlists.add(new Pair<String,ArrayList<String>>(playlistTitle, playlist_Songs));
+                    playlistTitle=null;
+                    playlist_Songs=new ArrayList<String>();
+                }
+            }
+            
+            //write all the playlists to m3u files
+            for(Pair<String,ArrayList<String>> playlist:Array_of_List_Of_Playlists){
+                ArrayList<String> listOfSongpaths=playlist.getValue1();
+                
+                File m3uFile=new File(Environment.getExternalStorageDirectory()+"/SongSync/PlayLists/"+playlist.getValue0()+".m3u");
+                m3uFile.getParentFile().mkdirs();
+                FileWriter writeplaylist = new FileWriter(m3uFile);
+                
+                for(String musicfile:listOfSongpaths){
+                    writeplaylist.write(musicfile+"\n");
+                }
+                
+                writeplaylist.flush();
+                writeplaylist.close();
+            }
+            
             is.close();
             in.close();
             out.close();
@@ -106,6 +152,7 @@ public class SyncWithPC extends Thread{
         out.println(reqsongOrig);
             
         //inform view we are waiting for the server to finish converting the song and adding the metadata
+        gui.songAction(reqsongid,reqsong.substring(reqsong.lastIndexOf("/")+1),"Downloading song");
         gui.waitingSong("Waiting for song to be converted...",reqsong.substring(reqsong.lastIndexOf("/")+1));
         
         //Receive the length of the song in bytes
