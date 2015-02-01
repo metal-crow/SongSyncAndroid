@@ -99,6 +99,9 @@ public class SyncWithPC extends Thread{
                 }
             }
             
+            //delete the old playlists
+            Runtime.getRuntime().exec("rm -r "+Environment.getExternalStorageDirectory()+"/SongSync/PlayLists");
+            
             //write all the playlists to m3u files
             for(Pair<String,ArrayList<String>> playlist:Array_of_List_Of_Playlists){
                 ArrayList<String> listOfSongpaths=playlist.getValue1();
