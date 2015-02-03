@@ -19,6 +19,7 @@ public class SyncWithPC extends Thread{
     private ArrayList<String> listOfSongsToRemove;
     private ArrayList<String> listOfSongsToAdd;
     private GUI gui;
+    private String SongFileType;
     
     public SyncWithPC(ArrayList<String> listOfSongsOldMaster, GUI gui) {
         this.listOfSongsToRemove=listOfSongsOldMaster;
@@ -54,6 +55,8 @@ public class SyncWithPC extends Thread{
             //remove all the songs to be removed
             for(int songid=0;songid<listOfSongsToRemove.size();songid++){
                 String song=listOfSongsToRemove.get(songid);
+                //since song filename has the converted filetype, change the masterlist's file extension to the converted value
+                song=song.substring(0,song.lastIndexOf("."))+SongFileType;
                 gui.songAction(songid,song.substring(song.lastIndexOf("/")),"Removing song");//tell view we are removing song
                 new File(Environment.getExternalStorageDirectory()+"/SongSync/Music/"+song).delete();
             }
@@ -87,8 +90,7 @@ public class SyncWithPC extends Thread{
                 //when we are receiving the songs
                 else if(playlistTitle!=null && !line.equals("NEW LIST")){
                     //make sure that the file extension matches what we are converting to
-                    //TODO temporary hardcoding of mp3
-                    playlist_Songs.add(Environment.getExternalStorageDirectory()+"/SongSync/Music/"+line.substring(0,line.lastIndexOf("."))+".mp3");
+                    playlist_Songs.add(Environment.getExternalStorageDirectory()+"/SongSync/Music/"+line.substring(0,line.lastIndexOf("."))+SongFileType);
                 }
                 
                 //at the end of this particular playlist, add the list and title to the Array_of_List_Of_Playlists and reset the title and list 
@@ -148,8 +150,8 @@ public class SyncWithPC extends Thread{
     private void downloadandRequestASong(FileWriter mastersonglistwrite, PrintWriter out, BufferedReader in, BufferedInputStream is, int reqsongid) throws IOException {
         String reqsongOrig=listOfSongsToAdd.get(reqsongid);
 
-        //TODO for now im hardcoding that the song is an mp3, but in the future the filetype will have to be gotten from the server before downloading all the songs, so we know here
-        String reqsong=reqsongOrig.replace(reqsongOrig.substring(reqsongOrig.lastIndexOf(".")), ".mp3");
+        //Make sure that the actual file saves is the correct converted extension, but the master list has the original server extension
+        String reqsong=reqsongOrig.replace(reqsongOrig.substring(reqsongOrig.lastIndexOf(".")), SongFileType);
         
         //send song request
         out.println(reqsongOrig);
@@ -208,6 +210,9 @@ public class SyncWithPC extends Thread{
      * @throws IOException
      */
     private void downloadSongList(File mastersonglist, BufferedReader in, FileWriter mastersonglistwrite) throws IOException {
+        //recieve what the filetype of the songs is
+        SongFileType=in.readLine();
+        
         //Receive the list of songs the computer has
         String recieve=in.readLine();
         while(!recieve.equals("ENDOFLIST")){
