@@ -60,7 +60,14 @@ public class SyncWithPC extends Thread{
                 //since song filename has the converted filetype, change the masterlist's file extension to the converted value
                 song=song.substring(0,song.lastIndexOf("."))+SongFileType;
                 gui.songAction(songid,song.substring(song.lastIndexOf("/")),"Removing song");//tell view we are removing song
-                new File(storage+"/SongSync/Music/"+song).delete();
+                File deletedsong=new File(storage+"/SongSync/Music/"+song);
+                deletedsong.delete();
+                //clean up empty folders
+                //check if parent folder is empty, if so remove, and repeat, moving up a parent folder
+                while(deletedsong.getParentFile().list().length<1){
+                    deletedsong=deletedsong.getParentFile();
+                    deletedsong.delete();
+                }
             }
             
             //tell the view the number of songs we have to download 
