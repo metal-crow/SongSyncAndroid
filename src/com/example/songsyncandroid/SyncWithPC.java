@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.Socket;
@@ -40,7 +41,7 @@ public class SyncWithPC extends Thread{
             Socket pcconnection=new Socket(ip, 9091);
     
             BufferedReader in=new BufferedReader(new InputStreamReader(pcconnection.getInputStream(), "utf-8"));
-            PrintWriter out=new PrintWriter(pcconnection.getOutputStream(), true);
+            PrintWriter out=new PrintWriter(new OutputStreamWriter(pcconnection.getOutputStream(), "utf-8"), true);
             //write new master song list to txt ONLY when we receive them. This stops sync failures after disconnects.
             File mastersonglist=new File(Environment.getExternalStorageDirectory()+"/SongSync/SongSync_Song_List.txt");
             
