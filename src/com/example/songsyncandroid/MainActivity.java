@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -25,6 +26,7 @@ public class MainActivity extends ActionBarActivity {
     private static TextView actioninfo;
     private static TextView songname;
     private static ProgressBar singlesongdownloadprogress;
+    private static EditText ipaddress;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,7 @@ public class MainActivity extends ActionBarActivity {
         sync= (Button) findViewById(R.id.button1);//get button
         actioninfo = (TextView) findViewById(R.id.actioninfo);
         songname = (TextView) findViewById(R.id.songname);
+        ipaddress = (EditText) findViewById(R.id.ipaddress);
         
         gui=new GUI(this,totalsongssyncedbar,actioninfo,songname,singlesongdownloadprogress);
         
@@ -51,7 +54,7 @@ public class MainActivity extends ActionBarActivity {
                     } catch (IOException e) {
                         gui.reportError("Unable to read the song list. Starting anew.");
                     }
-                    new SyncWithPC(listOfSongsOldMaster,gui).start();
+                    new SyncWithPC(listOfSongsOldMaster,gui,ipaddress.getText().toString()).start();
                 }
                 
             }

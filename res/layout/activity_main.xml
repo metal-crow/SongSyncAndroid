@@ -54,4 +54,21 @@
         android:text="SONGNAME"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
+    <EditText
+        android:id="@+id/ipaddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="46dp"
+        android:ems="10" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ipaddress"
+        android:layout_alignLeft="@+id/actioninfo"
+        android:text="IP address of PC" />
+
 </RelativeLayout>

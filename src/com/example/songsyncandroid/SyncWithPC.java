@@ -13,6 +13,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import android.os.Environment;
+import android.widget.EditText;
 
 public class SyncWithPC extends Thread{
 
@@ -20,11 +21,13 @@ public class SyncWithPC extends Thread{
     private ArrayList<String> listOfSongsToAdd;
     private GUI gui;
     private String SongFileType;
+    private String ip;
     
-    public SyncWithPC(ArrayList<String> listOfSongsOldMaster, GUI gui) {
+    public SyncWithPC(ArrayList<String> listOfSongsOldMaster, GUI gui, String ip) {
         this.listOfSongsToRemove=listOfSongsOldMaster;
         listOfSongsToAdd=new ArrayList<String>();
         this.gui=gui;
+        this.ip=ip;
     }
     
     @Override
@@ -34,7 +37,7 @@ public class SyncWithPC extends Thread{
             gui.waiting("Connecting to PC");
             
             //emulator address is "10.0.2.2"
-            Socket pcconnection=new Socket("10.0.2.2", 9091);
+            Socket pcconnection=new Socket(ip, 9091);
     
             BufferedReader in=new BufferedReader(new InputStreamReader(pcconnection.getInputStream()));
             PrintWriter out=new PrintWriter(pcconnection.getOutputStream(), true);
