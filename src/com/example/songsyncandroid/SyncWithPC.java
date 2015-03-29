@@ -14,7 +14,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import android.os.Environment;
-import android.widget.EditText;
 
 public class SyncWithPC extends Thread{
 
@@ -23,12 +22,18 @@ public class SyncWithPC extends Thread{
     private GUI gui;
     private String SongFileType;
     private String ip;
+    private String storage;
     
     public SyncWithPC(ArrayList<String> listOfSongsOldMaster, GUI gui, String ip) {
         this.listOfSongsToRemove=listOfSongsOldMaster;
         listOfSongsToAdd=new ArrayList<String>();
         this.gui=gui;
         this.ip=ip;
+        //use internal or external storage
+        storage=Environment.getExternalStorageDirectory().getPath()+"/extSdCard";
+        if(!new File(storage).isDirectory()){
+            storage=Environment.getExternalStorageDirectory().getPath();
+        }
     }
     
     @Override
@@ -43,7 +48,7 @@ public class SyncWithPC extends Thread{
             BufferedReader in=new BufferedReader(new InputStreamReader(pcconnection.getInputStream(), "utf-8"));
             PrintWriter out=new PrintWriter(new OutputStreamWriter(pcconnection.getOutputStream(), "utf-8"), true);
             //write new master song list to txt ONLY when we receive them. This stops sync failures after disconnects.
-            File mastersonglist=new File(Environment.getExternalStorageDirectory()+"/SongSync/SongSync_Song_List.txt");
+            File mastersonglist=new File(storage+"/SongSync/SongSync_Song_List.txt");
             
             //tell the view we are downloading the song list
             gui.waiting("Downloading Song List");
@@ -62,7 +67,7 @@ public class SyncWithPC extends Thread{
                 //since song filename has the converted filetype, change the masterlist's file extension to the converted value
                 song=song.substring(0,song.lastIndexOf("."))+SongFileType;
                 gui.songAction(songid,song.substring(song.lastIndexOf("/")),"Removing song");//tell view we are removing song
-                new File(Environment.getExternalStorageDirectory()+"/SongSync/Music/"+song).delete();
+                new File(storage+"/SongSync/Music/"+song).delete();
             }
             
             //tell the view the number of songs we have to download 
@@ -94,7 +99,7 @@ public class SyncWithPC extends Thread{
                 //when we are receiving the songs
                 else if(playlistTitle!=null && !line.equals("NEW LIST")){
                     //make sure that the file extension matches what we are converting to
-                    playlist_Songs.add(Environment.getExternalStorageDirectory()+"/SongSync/Music/"+line.substring(0,line.lastIndexOf("."))+SongFileType);
+                    playlist_Songs.add(storage+"/SongSync/Music/"+line.substring(0,line.lastIndexOf("."))+SongFileType);
                 }
                 
                 //at the end of this particular playlist, add the list and title to the Array_of_List_Of_Playlists and reset the title and list 
@@ -106,13 +111,13 @@ public class SyncWithPC extends Thread{
             }
             
             //delete the old playlists
-            Runtime.getRuntime().exec("rm -r "+Environment.getExternalStorageDirectory()+"/SongSync/PlayLists");
+            Runtime.getRuntime().exec("rm -r "+storage+"/SongSync/PlayLists");
             
             //write all the playlists to m3u files
             for(Pair<String,ArrayList<String>> playlist:Array_of_List_Of_Playlists){
                 ArrayList<String> listOfSongpaths=playlist.getValue1();
                 
-                File m3uFile=new File(Environment.getExternalStorageDirectory()+"/SongSync/PlayLists/"+playlist.getValue0()+".m3u");
+                File m3uFile=new File(storage+"/SongSync/PlayLists/"+playlist.getValue0()+".m3u");
                 m3uFile.getParentFile().mkdirs();
                 FileWriter writeplaylist = new FileWriter(m3uFile);
                 
@@ -192,7 +197,7 @@ public class SyncWithPC extends Thread{
             
         //write the song to storage
         //make the directories the file is in
-        File SongFileStructure=new File(Environment.getExternalStorageDirectory()+"/SongSync/Music/"+reqsong);
+        File SongFileStructure=new File(storage+"/SongSync/Music/"+reqsong);
         SongFileStructure.getParentFile().mkdirs();
             
         //write the song
