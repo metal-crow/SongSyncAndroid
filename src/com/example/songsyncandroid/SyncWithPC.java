@@ -39,7 +39,7 @@ public class SyncWithPC extends Thread{
             //emulator address is "10.0.2.2"
             Socket pcconnection=new Socket(ip, 9091);
     
-            BufferedReader in=new BufferedReader(new InputStreamReader(pcconnection.getInputStream()));
+            BufferedReader in=new BufferedReader(new InputStreamReader(pcconnection.getInputStream(), "utf-8"));
             PrintWriter out=new PrintWriter(pcconnection.getOutputStream(), true);
             //write new master song list to txt ONLY when we receive them. This stops sync failures after disconnects.
             File mastersonglist=new File(Environment.getExternalStorageDirectory()+"/SongSync/SongSync_Song_List.txt");
