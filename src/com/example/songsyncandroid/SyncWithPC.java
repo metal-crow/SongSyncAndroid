@@ -75,52 +75,12 @@ public class SyncWithPC extends Thread{
             }
             out.println("END OF SONG DOWNLOADS");
             
-            //read the playlists
-            String line="";
-            String playlistTitle=null;
-            ArrayList<Pair<String,ArrayList<String>>> Array_of_List_Of_Playlists = new ArrayList<Pair<String,ArrayList<String>>>();
-            ArrayList<String> playlist_Songs=new ArrayList<String>();
-            gui.waiting("Downloading Playlists");
-            while(!line.equals("NO MORE PLAYLISTS")){
-                //wait to receive the playlist title
-                line=in.readLine();
-                
-                //when we receive the title
-                if(playlistTitle==null && line!=null && !line.equals("")){
-                    playlistTitle=line;
-                }
-                //when we are receiving the songs
-                else if(playlistTitle!=null && !line.equals("NEW LIST")){
-                    //make sure that the file extension matches what we are converting to
-                    playlist_Songs.add(storage+"/SongSync/Music/"+line.substring(0,line.lastIndexOf("."))+SongFileType);
-                }
-                
-                //at the end of this particular playlist, add the list and title to the Array_of_List_Of_Playlists and reset the title and list 
-                else if(line.equals("NEW LIST")){
-                    Array_of_List_Of_Playlists.add(new Pair<String,ArrayList<String>>(playlistTitle, playlist_Songs));
-                    playlistTitle=null;
-                    playlist_Songs=new ArrayList<String>();
-                }
-            }
-            
             //delete the old playlists
             Runtime.getRuntime().exec("rm -r "+storage+"/SongSync/PlayLists");
-            
-            //write all the playlists to m3u files
-            for(Pair<String,ArrayList<String>> playlist:Array_of_List_Of_Playlists){
-                ArrayList<String> listOfSongpaths=playlist.getValue1();
-                
-                File m3uFile=new File(storage+"/SongSync/PlayLists/"+playlist.getValue0()+".m3u");
-                m3uFile.getParentFile().mkdirs();
-                FileWriter writeplaylist = new FileWriter(m3uFile);
-                
-                for(String musicfile:listOfSongpaths){
-                    writeplaylist.write(musicfile+"\n");
-                }
-                
-                writeplaylist.flush();
-                writeplaylist.close();
-            }
+
+            //read the playlists
+            gui.waiting("Downloading Playlists");
+            downloadPlayLists(in);
             
             is.close();
             in.close();
@@ -138,6 +98,45 @@ public class SyncWithPC extends Thread{
             gui.reportError(e.getMessage());
         }
         gui.resetUI();
+    }
+
+    /**
+     * Download all the m3u playlist files and write them
+     * @param in
+     * @throws IOException
+     */
+    private void downloadPlayLists(BufferedReader in) throws IOException {
+        String line="";
+        String playlistTitle=null;
+        FileWriter writeplaylist = null;
+        while(!line.equals("NO MORE PLAYLISTS")){
+            //wait to receive the playlist title
+            line=in.readLine();
+            
+            //when we receive the title
+            if(playlistTitle==null && line!=null && !line.equals("")){
+                playlistTitle=line;
+                //start the playlist file
+                File m3uFile=new File(storage+"/SongSync/PlayLists/"+playlistTitle+".m3u");
+                m3uFile.getParentFile().mkdirs();
+                writeplaylist = new FileWriter(m3uFile);
+            }
+            
+            //when we are receiving the songs
+            else if(playlistTitle!=null && !line.equals("NEW LIST")){
+                //make sure that the file extension matches what we are converting to
+                writeplaylist.write(storage+"/SongSync/Music/"+line.substring(0,line.lastIndexOf("."))+SongFileType+"\n");
+            }
+            
+            //at the end of this particular playlist, reset the title and restart 
+            else if(line.equals("NEW LIST")){
+                playlistTitle=null;
+                writeplaylist.flush();
+                writeplaylist.close();
+            }
+        }
+        writeplaylist.flush();
+        writeplaylist.close();
     }
 
     /**
