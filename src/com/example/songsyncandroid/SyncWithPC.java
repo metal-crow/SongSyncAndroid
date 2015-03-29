@@ -13,8 +13,6 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import android.os.Environment;
-
 public class SyncWithPC extends Thread{
 
     private ArrayList<String> listOfSongsToRemove;
@@ -43,16 +41,15 @@ public class SyncWithPC extends Thread{
     
             BufferedReader in=new BufferedReader(new InputStreamReader(pcconnection.getInputStream(), "utf-8"));
             PrintWriter out=new PrintWriter(new OutputStreamWriter(pcconnection.getOutputStream(), "utf-8"), true);
-            //write new master song list to txt ONLY when we receive them. This stops sync failures after disconnects.
-            File mastersonglist=new File(storage+"/SongSync/SongSync_Song_List.txt");
             
             //tell the view we are downloading the song list
             gui.waiting("Downloading Song List");
-
-            //Use FileWriter which can write without calling .close() because if we have a disconnect we still keep the records of the songs that did sync.
-            FileWriter mastersonglistwrite=new FileWriter(mastersonglist,false);
             
-            downloadSongList(mastersonglist, in, mastersonglistwrite);
+            //write new master song list to txt ONLY when we receive them. This stops sync failures after disconnects.
+            //Use FileWriter which can write without calling .close() because if we have a disconnect we still keep the records of the songs that did sync.
+            FileWriter mastersonglistwrite=new FileWriter(new File(storage+"/SongSync/SongSync_Song_List.txt"),false);
+            
+            downloadSongList(in, mastersonglistwrite);
             
             //tell the view the number of songs to remove
             gui.totalNumberofSongs(listOfSongsToRemove.size());
@@ -209,12 +206,11 @@ public class SyncWithPC extends Thread{
 
     /**
      * Download the song list
-     * @param mastersonglist
      * @param in
      * @param mastersonglistwrite
      * @throws IOException
      */
-    private void downloadSongList(File mastersonglist, BufferedReader in, FileWriter mastersonglistwrite) throws IOException {
+    private void downloadSongList(BufferedReader in, FileWriter mastersonglistwrite) throws IOException {
         //recieve what the filetype of the songs is
         SongFileType=in.readLine();
         
