@@ -47,14 +47,19 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 //dont sync unless we have mounted storage
+                //use internal or external storage
+                String storage="/extSdCard";
+                if(!new File(storage).isDirectory()){
+                    storage=Environment.getExternalStorageDirectory().getPath();
+                }
                 if(v==sync && Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
                     //load previous list of songs (if it exists)
                     try {
-                        loadPreviousSongList();
+                        loadPreviousSongList(storage);
                     } catch (IOException e) {
                         gui.reportError("Unable to read the song list. Starting anew.");
                     }
-                    new SyncWithPC(listOfSongsOldMaster,gui,ipaddress.getText().toString()).start();
+                    new SyncWithPC(listOfSongsOldMaster,gui,ipaddress.getText().toString(),storage).start();
                 }
                 
             }
@@ -66,8 +71,8 @@ public class MainActivity extends ActionBarActivity {
      * Load the previous master list from storage.
      * @throws IOException If some IO error occurs (storage dismounted in reading)
      */
-    private void loadPreviousSongList() throws IOException {
-        File mastersonglist=new File(Environment.getExternalStorageDirectory()+"/SongSync/SongSync_Song_List.txt");
+    private void loadPreviousSongList(String storage) throws IOException {
+        File mastersonglist=new File(storage+"/SongSync/SongSync_Song_List.txt");
         if(mastersonglist.exists() && mastersonglist.isFile()){
             BufferedReader in=new BufferedReader(new FileReader(mastersonglist));
             
