@@ -45,17 +45,24 @@ public class SyncWithPC extends Thread{
             //tell the view we are downloading the song list
             gui.waiting("Downloading Song List");
             
+            //read what type of sync this is
+            String type=in.readLine();
+            
             //write new master song list to txt ONLY when we receive them. This stops sync failures after disconnects.
             //Use FileWriter which can write without calling .close() because if we have a disconnect we still keep the records of the songs that did sync.
             FileWriter mastersonglistwrite=new FileWriter(new File(storage+"/SongSync/SongSync_Song_List.txt"),false);
             
-            downloadSongList(in, mastersonglistwrite);
+            downloadSongList(type, in, mastersonglistwrite);
             
             //tell the view the number of songs to remove
             gui.totalNumberofSongs(listOfSongsToRemove.size());
             
             //remove all the songs to be removed
             for(int songid=0;songid<listOfSongsToRemove.size();songid++){
+                    /*BUG TESTING
+                    gui.reportError("Why are we removing?");
+                    Thread.sleep(5000);
+                    break;*/
                 String song=listOfSongsToRemove.get(songid);
                 //since song filename has the converted filetype, change the masterlist's file extension to the converted value
                 song=song.substring(0,song.lastIndexOf("."))+SongFileType;
@@ -181,7 +188,6 @@ public class SyncWithPC extends Thread{
         //inform view we are downloading song
         gui.songAction(reqsongid,reqsong.substring(reqsong.lastIndexOf("/")+1),"Downloading song");
         
-        //System.out.println("recived length "+songlength);
         byte[] song=new byte[Integer.valueOf(songlength)];
         //amount to download for single song
         gui.singleSongDownloadProgressMax(song.length);
@@ -216,7 +222,7 @@ public class SyncWithPC extends Thread{
      * @param mastersonglistwrite
      * @throws IOException
      */
-    private void downloadSongList(BufferedReader in, FileWriter mastersonglistwrite) throws IOException {
+    private void downloadSongList(String type, BufferedReader in, FileWriter mastersonglistwrite) throws IOException {
         //recieve what the filetype of the songs is
         SongFileType=in.readLine();
         
@@ -227,14 +233,15 @@ public class SyncWithPC extends Thread{
             recieve=recieve.replaceAll("\\\\", "/");
             
             //when we receive a song title, check if we already have it in the old list
-            if(listOfSongsToRemove.contains(recieve)){
+            //and we are doing a normal sync
+            if(listOfSongsToRemove.contains(recieve) && type=="N"){
                 //if so, we remove it from the old list. At the end, the songs remaining in the old list no longer exist on the pc and will be removed from the phone
                 listOfSongsToRemove.remove(recieve);
                 //also write this song, which we already have downloaded, to the master list
                 mastersonglistwrite.write(recieve+"\n");
             }
             else{
-                //if it isnt in the previous master list, we need to get it
+                //if it isnt in the previous master list, or we are doing a full resync, we need to get it
                 listOfSongsToAdd.add(recieve);
             }
             recieve=in.readLine();
