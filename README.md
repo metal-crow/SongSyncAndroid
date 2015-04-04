@@ -7,3 +7,6 @@ This will NOT load and show song metadata and album art while downloading song, 
    
    * make sure storage has enough space for each new song  
    * actually design and recreate the gui, its in programming placeholder mode now    
+   * autodetect correct ip address
+   * <s>make conversion optional</s>  
+   

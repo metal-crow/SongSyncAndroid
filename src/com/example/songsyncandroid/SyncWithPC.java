@@ -65,7 +65,9 @@ public class SyncWithPC extends Thread{
                     break;*/
                 String song=listOfSongsToRemove.get(songid);
                 //since song filename has the converted filetype, change the masterlist's file extension to the converted value
-                song=song.substring(0,song.lastIndexOf("."))+SongFileType;
+                if(!SongFileType.equals("")){
+                    song=song.substring(0,song.lastIndexOf("."))+SongFileType;
+                }
                 gui.songAction(songid,song.substring(song.lastIndexOf("/")),"Removing song");//tell view we are removing song
                 File deletedsong=new File(storage+"/SongSync/Music/"+song);
                 deletedsong.delete();
@@ -139,7 +141,11 @@ public class SyncWithPC extends Thread{
             //when we are receiving the songs
             else if(playlistTitle!=null && !line.equals("NEW LIST")){
                 //make sure that the file extension matches what we are converting to
-                writeplaylist.write(storage+"/SongSync/Music/"+line.substring(0,line.lastIndexOf("."))+SongFileType+"\n");
+                if(!SongFileType.equals("")){
+                    writeplaylist.write(storage+"/SongSync/Music/"+line.substring(0,line.lastIndexOf("."))+SongFileType+"\n");
+                }else{
+                    writeplaylist.write(storage+"/SongSync/Music/"+line+"\n");
+                }
             }
             
             //at the end of this particular playlist, reset the title and restart 
@@ -166,8 +172,12 @@ public class SyncWithPC extends Thread{
         String reqsongOrig=listOfSongsToAdd.get(reqsongid);
 
         //Make sure that the actual file saves is the correct converted extension, but the master list has the original server extension
-        String reqsong=reqsongOrig.replace(reqsongOrig.substring(reqsongOrig.lastIndexOf(".")), SongFileType);
-        
+        String reqsong;
+        if(!SongFileType.equals("")){
+            reqsong=reqsongOrig.replace(reqsongOrig.substring(reqsongOrig.lastIndexOf(".")), SongFileType);
+        }else{
+            reqsong=reqsongOrig;
+        }
         //send song request
         out.println(reqsongOrig);
             
