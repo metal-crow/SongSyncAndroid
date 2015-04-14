@@ -125,11 +125,9 @@ public class SyncWithPC extends Thread{
         String line="";
         String playlistTitle=null;
         FileWriter writeplaylist = null;
+        line=in.readLine();
         while(!line.equals("NO MORE PLAYLISTS")){
-            //wait to receive the playlist title
-            line=in.readLine();
-            
-            //when we receive the title
+            //receive the title
             if(playlistTitle==null && line!=null && !line.equals("")){
                 playlistTitle=line;
                 //start the playlist file
@@ -154,6 +152,9 @@ public class SyncWithPC extends Thread{
                 writeplaylist.flush();
                 writeplaylist.close();
             }
+            
+            //receive the playlist title
+            line=in.readLine();
         }
         writeplaylist.flush();
         writeplaylist.close();
