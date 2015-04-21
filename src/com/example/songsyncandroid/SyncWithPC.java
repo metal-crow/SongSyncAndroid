@@ -1,6 +1,6 @@
 package com.example.songsyncandroid;
 
-import gui.GUI;
+import gui.MainActivity;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -19,24 +19,20 @@ public class SyncWithPC extends Thread{
 
     private ArrayList<String> listOfSongsToRemove;
     private ArrayList<String> listOfSongsToAdd;
-    private GUI gui;
     private String SongFileType;
     private String ip;
-    private String storage;
     
-    public SyncWithPC(ArrayList<String> listOfSongsOldMaster, GUI gui, String ip, String storage) {
+    public SyncWithPC(ArrayList<String> listOfSongsOldMaster, String ip) {
         this.listOfSongsToRemove=listOfSongsOldMaster;
         listOfSongsToAdd=new ArrayList<String>();
-        this.gui=gui;
         this.ip=ip;
-        this.storage=storage;
     }
     
     @Override
     public void run() {
         try{
             //tell view we are trying to connect
-            gui.waiting("Connecting to PC");
+            MainActivity.gui.waiting("Connecting to PC");
             
             //emulator address is "10.0.2.2"
             Socket pcconnection=new Socket(ip, 9091);
@@ -45,24 +41,24 @@ public class SyncWithPC extends Thread{
             PrintWriter out=new PrintWriter(new OutputStreamWriter(pcconnection.getOutputStream(), "utf-8"), true);
             
             //tell the view we are downloading the song list
-            gui.waiting("Downloading Song List");
+            MainActivity.gui.waiting("Downloading Song List");
             
             //read what type of sync this is
             String type=in.readLine();
             
             //write new master song list to txt ONLY when we receive them. This stops sync failures after disconnects.
             //Use FileWriter which can write without calling .close() because if we have a disconnect we still keep the records of the songs that did sync.
-            FileWriter mastersonglistwrite=new FileWriter(new File(storage+"/SongSync/SongSync_Song_List.txt"),false);
+            FileWriter mastersonglistwrite=new FileWriter(new File(MainActivity.storage+"/SongSync/SongSync_Song_List.txt"),false);
             
             downloadSongList(type, in, mastersonglistwrite);
             
             //tell the view the number of songs to remove
-            gui.totalNumberofSongs(listOfSongsToRemove.size());
+            MainActivity.gui.totalNumberofSongs(listOfSongsToRemove.size());
             
             //remove all the songs to be removed
             for(int songid=0;songid<listOfSongsToRemove.size();songid++){
                     /*BUG TESTING
-                    gui.reportError("Why are we removing?");
+                    MainActivity.gui.reportError("Why are we removing?");
                     Thread.sleep(5000);
                     break;*/
                 String song=listOfSongsToRemove.get(songid);
@@ -70,8 +66,8 @@ public class SyncWithPC extends Thread{
                 if(!SongFileType.equals("")){
                     song=song.substring(0,song.lastIndexOf("."))+SongFileType;
                 }
-                gui.songAction(songid,song.substring(song.lastIndexOf("/")),"Removing song");//tell view we are removing song
-                File deletedsong=new File(storage+"/SongSync/Music/"+song);
+                MainActivity.gui.songAction(songid,song.substring(song.lastIndexOf("/")),"Removing song");//tell view we are removing song
+                File deletedsong=new File(MainActivity.storage+"/SongSync/Music/"+song);
                 deletedsong.delete();
                 //clean up empty folders
                 //check if parent folder is empty, if so remove, and repeat, moving up a parent folder
@@ -82,7 +78,7 @@ public class SyncWithPC extends Thread{
             }
             
             //tell the view the number of songs we have to download 
-            gui.totalNumberofSongs(listOfSongsToAdd.size());
+            MainActivity.gui.totalNumberofSongs(listOfSongsToAdd.size());
                         
             BufferedInputStream is = new BufferedInputStream(pcconnection.getInputStream());
             //send server list of requested songs
@@ -94,10 +90,10 @@ public class SyncWithPC extends Thread{
             out.println("END OF SONG DOWNLOADS");
             
             //delete the old playlists
-            Runtime.getRuntime().exec("rm -r "+storage+"/SongSync/PlayLists");
+            Runtime.getRuntime().exec("rm -r "+MainActivity.storage+"/SongSync/PlayLists");
 
             //read the playlists
-            gui.waiting("Downloading Playlists");
+            MainActivity.gui.waiting("Downloading Playlists");
             downloadPlayLists(in);
             
             is.close();
@@ -105,17 +101,17 @@ public class SyncWithPC extends Thread{
             out.close();
             mastersonglistwrite.close();
             
-            gui.songAction(listOfSongsToAdd.size(),"","Finished Downloading");
+            MainActivity.gui.songAction(listOfSongsToAdd.size(),"","Finished Downloading");
             
             pcconnection.close();
             
         }catch(ConnectException e){
-            gui.reportError("Connection to ip "+ip+" timedout. Is the server available?");
+            MainActivity.gui.reportError("Connection to ip "+ip+" timedout. Is the server available?");
         }catch(Exception e){
             e.printStackTrace();
-            gui.reportError(e.getMessage());
+            MainActivity.gui.reportError(e.getMessage());
         }
-        gui.resetUI();
+        MainActivity.gui.resetUI();
     }
 
     /**
@@ -133,7 +129,7 @@ public class SyncWithPC extends Thread{
             if(playlistTitle==null && line!=null && !line.equals("")){
                 playlistTitle=line;
                 //start the playlist file
-                File m3uFile=new File(storage+"/SongSync/PlayLists/"+playlistTitle+".m3u");
+                File m3uFile=new File(MainActivity.storage+"/SongSync/PlayLists/"+playlistTitle+".m3u");
                 m3uFile.getParentFile().mkdirs();
                 writeplaylist = new FileWriter(m3uFile);
             }
@@ -142,9 +138,9 @@ public class SyncWithPC extends Thread{
             else if(playlistTitle!=null && !line.equals("NEW LIST")){
                 //make sure that the file extension matches what we are converting to
                 if(!SongFileType.equals("")){
-                    writeplaylist.write(storage+"/SongSync/Music/"+line.substring(0,line.lastIndexOf("."))+SongFileType+"\n");
+                    writeplaylist.write(MainActivity.storage+"/SongSync/Music/"+line.substring(0,line.lastIndexOf("."))+SongFileType+"\n");
                 }else{
-                    writeplaylist.write(storage+"/SongSync/Music/"+line+"\n");
+                    writeplaylist.write(MainActivity.storage+"/SongSync/Music/"+line+"\n");
                 }
             }
             
@@ -185,8 +181,8 @@ public class SyncWithPC extends Thread{
         out.println(reqsongOrig);
             
         //inform view we are waiting for the server to finish converting the song and adding the metadata
-        gui.songAction(reqsongid,reqsong.substring(reqsong.lastIndexOf("/")+1),"Downloading song");
-        gui.waitingSong("Waiting for song to be converted...",reqsong.substring(reqsong.lastIndexOf("/")+1));
+        MainActivity.gui.songAction(reqsongid,reqsong.substring(reqsong.lastIndexOf("/")+1),"Downloading song");
+        MainActivity.gui.waitingSong("Waiting for song to be converted...",reqsong.substring(reqsong.lastIndexOf("/")+1));
         
         //Receive the length of the song in bytes
         String songlength=null;
@@ -199,23 +195,23 @@ public class SyncWithPC extends Thread{
         out.println("READY");
         
         //inform view we are downloading song
-        gui.songAction(reqsongid,reqsong.substring(reqsong.lastIndexOf("/")+1),"Downloading song");
+        MainActivity.gui.songAction(reqsongid,reqsong.substring(reqsong.lastIndexOf("/")+1),"Downloading song");
         
         byte[] song=new byte[Integer.valueOf(songlength)];
         //amount to download for single song
-        gui.singleSongDownloadProgressMax(song.length);
+        MainActivity.gui.singleSongDownloadProgressMax(song.length);
         
         //Receive the song in bytes (split into multiple packets)
         int count=0;
         while(count<song.length){
             count+=is.read(song,count,song.length-count);
             //current download progress
-            gui.singleSongDownloadProgress(count);
+            MainActivity.gui.singleSongDownloadProgress(count);
         }
             
         //write the song to storage
         //make the directories the file is in
-        File SongFileStructure=new File(storage+"/SongSync/Music/"+reqsong);
+        File SongFileStructure=new File(MainActivity.storage+"/SongSync/Music/"+reqsong);
         SongFileStructure.getParentFile().mkdirs();
             
         //write the song

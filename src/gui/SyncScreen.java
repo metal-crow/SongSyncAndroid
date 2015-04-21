@@ -11,16 +11,11 @@ import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.example.songsyncandroid.R;
 import com.example.songsyncandroid.SyncWithPC;
 
 public class SyncScreen extends ActionBarActivity {
-    private static GUI gui;
-    private static ArrayList<String> listOfSongsOldMaster=new ArrayList<String>();
-    
     public static int saved_space=500;
     
     @Override
@@ -28,40 +23,31 @@ public class SyncScreen extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sync_state);
         
-        ProgressBar totalsongssyncedbar = (ProgressBar) findViewById(R.id.totalsongssyncedbar);
-        ProgressBar singlesongdownloadprogress = (ProgressBar) findViewById(R.id.singlesongdownloadprogress);
         Button sync= (Button) findViewById(R.id.syncStart);
-        TextView actioninfo = (TextView) findViewById(R.id.actioninfo);
-        TextView songname = (TextView) findViewById(R.id.songname);
-        
-        gui=new GUI(this,totalsongssyncedbar,actioninfo,songname,singlesongdownloadprogress);
-        
+                
         sync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //dont sync unless we have mounted storage
-                //use internal or external storage
-                String storage="/extSdCard";
-                if(!new File(storage).isDirectory()){
-                    storage=Environment.getExternalStorageDirectory().getPath();
-                }
-                
                 if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
                     //load previous list of songs (if it exists)
+                    ArrayList<String> listOfSongsOldMaster=new ArrayList<String>();
                     try {
-                        loadPreviousSongList(storage);
+                        loadPreviousSongList(MainActivity.storage,listOfSongsOldMaster);
                     } catch (IOException e) {
-                        gui.reportError("Unable to read the song list. Starting anew.");
+                        MainActivity.gui.reportError("Unable to read the song list. Starting anew.");
                     }
                     //read ipaddress from settings
                     String ipaddress=getSharedPreferences(MainActivity.PREFS_NAME, 0).getString("ipaddress", "");
                     
                     if(ipaddress.equals("")){
-                        gui.reportError("IP address not set. Go into settings to set it.");
+                        MainActivity.gui.reportError("IP address not set. Go into settings to set it.");
                     }else{
                         //start sync thread
-                        new SyncWithPC(listOfSongsOldMaster,gui,ipaddress,storage).start();
+                        new SyncWithPC(listOfSongsOldMaster,ipaddress).start();
                     }
+                }else{
+                    MainActivity.gui.reportError("External Storage not mounted!");
                 }
                 
             }
@@ -71,9 +57,10 @@ public class SyncScreen extends ActionBarActivity {
     
     /**
      * Load the previous master list from storage.
+     * @param listOfSongsOldMaster
      * @throws IOException If some IO error occurs (storage dismounted in reading)
      */
-    private void loadPreviousSongList(String storage) throws IOException {
+    private void loadPreviousSongList(String storage, ArrayList<String> listOfSongsOldMaster) throws IOException {
         File mastersonglist=new File(storage+"/SongSync/SongSync_Song_List.txt");
         if(mastersonglist.exists() && mastersonglist.isFile()){
             BufferedReader in=new BufferedReader(new FileReader(mastersonglist));
