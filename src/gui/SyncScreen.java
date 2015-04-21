@@ -1,4 +1,4 @@
-package com.example.songsyncandroid;
+package gui;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,37 +9,30 @@ import java.util.ArrayList;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class MainActivity extends ActionBarActivity {
-    
-    private static Button sync;
-    private static ArrayList<String> listOfSongsOldMaster=new ArrayList<String>();
-    private static ProgressBar totalsongssyncedbar;
+import com.example.songsyncandroid.R;
+import com.example.songsyncandroid.SyncWithPC;
+
+public class SyncScreen extends ActionBarActivity {
     private static GUI gui;
-    private static TextView actioninfo;
-    private static TextView songname;
-    private static ProgressBar singlesongdownloadprogress;
-    private static EditText ipaddress;
+    private static ArrayList<String> listOfSongsOldMaster=new ArrayList<String>();
+    
+    public static int saved_space=500;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.sync_state);
         
-        
-        totalsongssyncedbar = (ProgressBar) findViewById(R.id.totalsongssyncedbar);
-        singlesongdownloadprogress = (ProgressBar) findViewById(R.id.singlesongdownloadprogress);
-        sync= (Button) findViewById(R.id.button1);//get button
-        actioninfo = (TextView) findViewById(R.id.actioninfo);
-        songname = (TextView) findViewById(R.id.songname);
-        ipaddress = (EditText) findViewById(R.id.ipaddress);
+        ProgressBar totalsongssyncedbar = (ProgressBar) findViewById(R.id.totalsongssyncedbar);
+        ProgressBar singlesongdownloadprogress = (ProgressBar) findViewById(R.id.singlesongdownloadprogress);
+        Button sync= (Button) findViewById(R.id.syncStart);
+        TextView actioninfo = (TextView) findViewById(R.id.actioninfo);
+        TextView songname = (TextView) findViewById(R.id.songname);
         
         gui=new GUI(this,totalsongssyncedbar,actioninfo,songname,singlesongdownloadprogress);
         
@@ -52,14 +45,23 @@ public class MainActivity extends ActionBarActivity {
                 if(!new File(storage).isDirectory()){
                     storage=Environment.getExternalStorageDirectory().getPath();
                 }
-                if(v==sync && Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
+                
+                if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
                     //load previous list of songs (if it exists)
                     try {
                         loadPreviousSongList(storage);
                     } catch (IOException e) {
                         gui.reportError("Unable to read the song list. Starting anew.");
                     }
-                    new SyncWithPC(listOfSongsOldMaster,gui,ipaddress.getText().toString(),storage).start();
+                    //read ipaddress from settings
+                    String ipaddress=getSharedPreferences(MainActivity.PREFS_NAME, 0).getString("ipaddress", "");
+                    
+                    if(ipaddress.equals("")){
+                        gui.reportError("IP address not set. Go into settings to set it.");
+                    }else{
+                        //start sync thread
+                        new SyncWithPC(listOfSongsOldMaster,gui,ipaddress,storage).start();
+                    }
                 }
                 
             }
@@ -84,25 +86,6 @@ public class MainActivity extends ActionBarActivity {
         }else{
             mastersonglist.getParentFile().mkdirs();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
     
 }

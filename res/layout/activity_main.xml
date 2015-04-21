@@ -6,69 +6,32 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.songsyncandroid.MainActivity" >
+    tools:context="gui.MainActivity" >
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/DeleteLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="Sync with PC" />
-
-    <ProgressBar
-        android:id="@+id/totalsongssyncedbar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/button1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="17dp" />
-
-    <TextView
-        android:id="@+id/actioninfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/button1"
-        android:layout_below="@+id/totalsongssyncedbar"
-        android:layout_marginTop="22dp"
-        android:text="ACTIONNAME"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <ProgressBar
-        android:id="@+id/singlesongdownloadprogress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/songname"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="30dp" />
-
-    <TextView
-        android:id="@+id/songname"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/totalsongssyncedbar"
-        android:layout_below="@+id/actioninfo"
-        android:layout_marginTop="30dp"
-        android:text="SONGNAME"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <EditText
-        android:id="@+id/ipaddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/button1"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="46dp"
-        android:ems="10" />
+        android:layout_marginBottom="188dp"
+        android:text="Delete Song" />
 
-    <TextView
-        android:id="@+id/textView1"
+    <Button
+        android:id="@+id/syncLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/ipaddress"
-        android:layout_alignLeft="@+id/actioninfo"
-        android:text="IP address of PC" />
+        android:layout_above="@+id/DeleteLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="64dp"
+        android:text="Sync" />
+
+    <Button
+        android:id="@+id/settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="Settings" />
 
 </RelativeLayout>

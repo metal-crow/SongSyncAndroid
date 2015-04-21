@@ -1,5 +1,7 @@
 package com.example.songsyncandroid;
 
+import gui.GUI;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -108,7 +110,7 @@ public class SyncWithPC extends Thread{
             pcconnection.close();
             
         }catch(ConnectException e){
-            gui.reportError("Connection timedout. Is the server available?");
+            gui.reportError("Connection to ip "+ip+" timedout. Is the server available?");
         }catch(Exception e){
             e.printStackTrace();
             gui.reportError(e.getMessage());

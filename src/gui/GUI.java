@@ -1,18 +1,19 @@
-package com.example.songsyncandroid;
+package gui;
 
+import android.support.v7.app.ActionBarActivity;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class GUI extends Thread{
     
-    private MainActivity c;
+    private ActionBarActivity c;
     private ProgressBar totalsongssyncedbar;
     private TextView actioninfo;
     private TextView songnameTV;
     private ProgressBar singlesongdownloadprogress;
     
-    public GUI(MainActivity context, ProgressBar totalsongssyncedbar, TextView actioninfo, TextView songname, ProgressBar singlesongdownloadprogress) {
+    public GUI(ActionBarActivity context, ProgressBar totalsongssyncedbar, TextView actioninfo, TextView songname, ProgressBar singlesongdownloadprogress) {
         this.totalsongssyncedbar=totalsongssyncedbar;
         this.actioninfo=actioninfo;
         this.songnameTV=songname;
