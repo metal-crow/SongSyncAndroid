@@ -3,26 +3,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <Button
-        android:id="@+id/delete_song_finder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="44dp"
-        android:text="Search" />
-
     <EditText
         android:id="@+id/DeleteSongData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/delete_song_finder"
         android:layout_alignBottom="@+id/delete_song_finder"
+        android:layout_alignLeft="@+id/deleted_selected_song"
         android:layout_alignParentRight="true"
         android:ems="10" >
 
         <requestFocus />
     </EditText>
 
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/deleted_selected_song" >
+
+    </ListView>
+
+    <Button
+        android:id="@+id/delete_song_finder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="14dp"
+        android:layout_toLeftOf="@+id/DeleteSongData"
+        android:text="Search" />
+
+    <Button
+        android:id="@+id/deleted_selected_song"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/delete_song_finder"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="14dp"
+        android:text="Delete Selected" />
+    
 </RelativeLayout>

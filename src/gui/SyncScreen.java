@@ -60,7 +60,7 @@ public class SyncScreen extends ActionBarActivity {
      * @param listOfSongsOldMaster
      * @throws IOException If some IO error occurs (storage dismounted in reading)
      */
-    private void loadPreviousSongList(String storage, ArrayList<String> listOfSongsOldMaster) throws IOException {
+    public static void loadPreviousSongList(String storage, ArrayList<String> listOfSongsOldMaster) throws IOException {
         File mastersonglist=new File(storage+"/SongSync/SongSync_Song_List.txt");
         if(mastersonglist.exists() && mastersonglist.isFile()){
             BufferedReader in=new BufferedReader(new FileReader(mastersonglist));

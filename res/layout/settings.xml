@@ -4,7 +4,7 @@
     android:layout_height="match_parent" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/delete_list_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -25,8 +25,8 @@
         android:id="@+id/ipaddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textView1"
-        android:layout_alignBottom="@+id/textView1"
+        android:layout_alignBaseline="@+id/delete_list_item"
+        android:layout_alignBottom="@+id/delete_list_item"
         android:layout_alignParentRight="true"
         android:ems="10"
         android:inputType="phone" />
