@@ -164,8 +164,6 @@ public class SyncWithPC extends Thread{
             //receive the playlist title
             line=in.readLine();
         }
-        writeplaylist.flush();
-        writeplaylist.close();
     }
 
     /**
