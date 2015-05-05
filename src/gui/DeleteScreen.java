@@ -1,8 +1,10 @@
 package gui;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -24,7 +26,7 @@ public class DeleteScreen extends Activity{
     private static ArrayList<String> filter_listOfSongs=new ArrayList<String>();
     private static ArrayAdapter<String> adapter;
     private static int selected_id=-1;
-    private static FileWriter songs_to_delete;
+    private static BufferedWriter songs_to_delete;
     private static AlertDialog.Builder confirm;
 
     @Override
@@ -33,8 +35,9 @@ public class DeleteScreen extends Activity{
         setContentView(R.layout.delete_song);
 
         //songs we want to delete
+        File delete_list=new File(MainActivity.storage+"/SongSync/SongSync_Delete_Song_List.txt");
         try {
-            songs_to_delete=new FileWriter(new File(MainActivity.storage+"/SongSync/SongSync_Delete_Song_List.txt"),true);
+            songs_to_delete=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(delete_list,true),"utf-8"));
         } catch (IOException e1) {
             MainActivity.gui.reportError("Unable to open song deletion file.");
         }

@@ -5,8 +5,8 @@ import gui.MainActivity;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -43,7 +43,7 @@ public class SyncWithPC extends Thread{
             //write out songs we want deleted
             File delete_list=new File(MainActivity.storage+"/SongSync/SongSync_Delete_Song_List.txt");
             if(delete_list.exists()){
-                BufferedReader songs_to_delete=new BufferedReader(new FileReader(delete_list));
+                BufferedReader songs_to_delete=new BufferedReader(new InputStreamReader(new FileInputStream(delete_list),"utf-8"));
                 while(songs_to_delete.ready()){
                     String song=songs_to_delete.readLine();
                     out.println(song);
@@ -62,7 +62,7 @@ public class SyncWithPC extends Thread{
             
             //write new master song list to txt ONLY when we receive them. This stops sync failures after disconnects.
             //Use FileWriter which can write without calling .close() because if we have a disconnect we still keep the records of the songs that did sync.
-            FileWriter mastersonglistwrite=new FileWriter(new File(MainActivity.storage+"/SongSync/SongSync_Song_List.txt"),false);
+            PrintWriter mastersonglistwrite=new PrintWriter(new File(MainActivity.storage+"/SongSync/SongSync_Song_List.txt"), "utf-8");
             
             downloadSongList(type, in, mastersonglistwrite);
             
@@ -175,7 +175,7 @@ public class SyncWithPC extends Thread{
      * @param reqsongid 
      * @throws IOException 
      */
-    private void downloadandRequestASong(FileWriter mastersonglistwrite, PrintWriter out, BufferedReader in, BufferedInputStream is, int reqsongid) throws IOException {
+    private void downloadandRequestASong(PrintWriter mastersonglistwrite, PrintWriter out, BufferedReader in, BufferedInputStream is, int reqsongid) throws IOException {
         String reqsongOrig=listOfSongsToAdd.get(reqsongid);
 
         //Make sure that the actual file saves is the correct converted extension, but the master list has the original server extension
@@ -239,7 +239,7 @@ public class SyncWithPC extends Thread{
      * @param mastersonglistwrite
      * @throws IOException
      */
-    private void downloadSongList(String type, BufferedReader in, FileWriter mastersonglistwrite) throws IOException {
+    private void downloadSongList(String type, BufferedReader in, PrintWriter mastersonglistwrite) throws IOException {
         //recieve what the filetype of the songs is
         SongFileType=in.readLine();
         
