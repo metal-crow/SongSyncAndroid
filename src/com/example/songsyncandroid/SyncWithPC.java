@@ -35,7 +35,6 @@ public class SyncWithPC extends Thread{
             //tell view we are trying to connect
             MainActivity.gui.waiting("Connecting to PC");
             
-            //emulator address is "10.0.2.2"
             Socket pcconnection=new Socket(ip, 9091);
     
             BufferedReader in=new BufferedReader(new InputStreamReader(pcconnection.getInputStream(), "utf-8"));
