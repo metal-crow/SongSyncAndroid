@@ -6,6 +6,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -40,6 +41,17 @@ public class SyncWithPC extends Thread{
             BufferedReader in=new BufferedReader(new InputStreamReader(pcconnection.getInputStream(), "utf-8"));
             PrintWriter out=new PrintWriter(new OutputStreamWriter(pcconnection.getOutputStream(), "utf-8"), true);
             
+            //write out songs we want deleted
+            BufferedReader songs_to_delete=new BufferedReader(new FileReader(new File(MainActivity.storage+"/SongSync/SongSync_Delete_Song_List.txt")));
+            while(songs_to_delete.ready()){
+                String song=songs_to_delete.readLine();
+                out.println(song);
+            }
+            out.println("END OF SONG DELETIONS");
+            //wipe the delete songs file
+            songs_to_delete.close();
+            new File(MainActivity.storage+"/SongSync/SongSync_Delete_Song_List.txt").delete();
+            
             //tell the view we are downloading the song list
             MainActivity.gui.waiting("Downloading Song List");
             
@@ -57,10 +69,6 @@ public class SyncWithPC extends Thread{
             
             //remove all the songs to be removed
             for(int songid=0;songid<listOfSongsToRemove.size();songid++){
-                    /*BUG TESTING
-                    MainActivity.gui.reportError("Why are we removing?");
-                    Thread.sleep(5000);
-                    break;*/
                 String song=listOfSongsToRemove.get(songid);
                 //since song filename has the converted filetype, change the masterlist's file extension to the converted value
                 if(!SongFileType.equals("")){

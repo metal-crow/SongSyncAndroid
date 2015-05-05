@@ -1,5 +1,7 @@
 package gui;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -20,12 +22,20 @@ public class DeleteScreen extends Activity{
     private static ArrayList<String> filter_listOfSongs=new ArrayList<String>();
     private static ArrayAdapter<String> adapter;
     private static int selected_id=-1;
+    private FileWriter songs_to_delete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.delete_song);
 
+        //songs we want to delete
+        try {
+            songs_to_delete=new FileWriter(new File(MainActivity.storage+"/SongSync/SongSync_Delete_Song_List.txt"),true);
+        } catch (IOException e1) {
+            MainActivity.gui.reportError("Unable to open song deletion file.");
+        }
+        
         //get list
         ListView list = (ListView) findViewById(R.id.listview);
         //set list adaptor
@@ -78,7 +88,12 @@ public class DeleteScreen extends Activity{
                 //get item selected on list
                 String song=((ListView) findViewById(R.id.listview)).getItemAtPosition(selected_id).toString();
                 //delete
-                System.out.println(song);
+                try {
+                    songs_to_delete.write(song+"\n");
+                    songs_to_delete.flush();
+                } catch (IOException e) {
+                    MainActivity.gui.reportError("Unable to write to the deletion songs file.");
+                }
             }
         });
     }
