@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,7 +24,8 @@ public class DeleteScreen extends Activity{
     private static ArrayList<String> filter_listOfSongs=new ArrayList<String>();
     private static ArrayAdapter<String> adapter;
     private static int selected_id=-1;
-    private FileWriter songs_to_delete;
+    private static FileWriter songs_to_delete;
+    private static AlertDialog.Builder confirm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,10 +84,14 @@ public class DeleteScreen extends Activity{
             }
         });
         
-        //set delete song button functionality
-        ((Button) findViewById(R.id.deleted_selected_song)).setOnClickListener(new View.OnClickListener() {
+        //confirmation popup settings
+        confirm =new AlertDialog.Builder(this);
+        confirm.setIcon(android.R.drawable.ic_dialog_alert);
+        confirm.setTitle("Delete Song");
+        confirm.setMessage("Are you sure you want to permantly delete this song off your computer?");
+        confirm.setPositiveButton("Yes", new DialogInterface.OnClickListener(){
             @Override
-            public void onClick(View v) {
+            public void onClick(DialogInterface dialog, int which) {
                 //get item selected on list
                 String song=((ListView) findViewById(R.id.listview)).getItemAtPosition(selected_id).toString();
                 //delete
@@ -93,6 +100,26 @@ public class DeleteScreen extends Activity{
                     songs_to_delete.flush();
                 } catch (IOException e) {
                     MainActivity.gui.reportError("Unable to write to the deletion songs file.");
+                }
+                //delete notice
+                MainActivity.gui.reportError("Song Deleted");
+                //remove from list
+                filter_listOfSongs.remove(song);
+                adapter.notifyDataSetChanged();
+                selected_id=-1;
+            }
+        });
+        confirm.setNegativeButton("No", null);
+        
+        //set delete song button functionality
+        ((Button) findViewById(R.id.deleted_selected_song)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {         
+                if(selected_id!=-1){
+                    //confirmation popup
+                    confirm.show();
+                }else{
+                    MainActivity.gui.reportError("No song selected");
                 }
             }
         });
