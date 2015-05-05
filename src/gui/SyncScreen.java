@@ -11,6 +11,8 @@ import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.songsyncandroid.R;
 import com.example.songsyncandroid.SyncWithPC;
@@ -24,6 +26,13 @@ public class SyncScreen extends ActionBarActivity {
         setContentView(R.layout.sync_state);
         
         Button sync= (Button) findViewById(R.id.syncStart);
+        
+        //set gui component ids now that we are in that component's layout
+        MainActivity.gui.loadSyncComponents(
+                ((ProgressBar) findViewById(R.id.totalsongssyncedbar)),
+                ((TextView) findViewById(R.id.actioninfo)),
+                ((TextView) findViewById(R.id.songname)),
+                ((ProgressBar) findViewById(R.id.singlesongdownloadprogress)));
                 
         sync.setOnClickListener(new View.OnClickListener() {
             @Override

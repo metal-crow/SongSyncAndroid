@@ -13,11 +13,22 @@ public class GUI extends Thread{
     private TextView songnameTV;
     private ProgressBar singlesongdownloadprogress;
     
-    public GUI(ActionBarActivity context, ProgressBar totalsongssyncedbar, TextView actioninfo, TextView songname, ProgressBar singlesongdownloadprogress) {
+    public GUI(ActionBarActivity context) {
+        c=context;
+    }
+    
+
+    /**
+     * Load the layout components for the sync layout
+     * @param progressBar
+     * @param textView
+     * @param textView2
+     * @param progressBar2
+     */
+    public void loadSyncComponents(ProgressBar totalsongssyncedbar, TextView actioninfo, TextView songname, ProgressBar singlesongdownloadprogress) {
         this.totalsongssyncedbar=totalsongssyncedbar;
         this.actioninfo=actioninfo;
         this.songnameTV=songname;
-        c=context;
         this.singlesongdownloadprogress=singlesongdownloadprogress;
     }
 

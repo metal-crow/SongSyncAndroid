@@ -41,15 +41,18 @@ public class SyncWithPC extends Thread{
             PrintWriter out=new PrintWriter(new OutputStreamWriter(pcconnection.getOutputStream(), "utf-8"), true);
             
             //write out songs we want deleted
-            BufferedReader songs_to_delete=new BufferedReader(new FileReader(new File(MainActivity.storage+"/SongSync/SongSync_Delete_Song_List.txt")));
-            while(songs_to_delete.ready()){
-                String song=songs_to_delete.readLine();
-                out.println(song);
+            File delete_list=new File(MainActivity.storage+"/SongSync/SongSync_Delete_Song_List.txt");
+            if(delete_list.exists()){
+                BufferedReader songs_to_delete=new BufferedReader(new FileReader(delete_list));
+                while(songs_to_delete.ready()){
+                    String song=songs_to_delete.readLine();
+                    out.println(song);
+                }
+                //wipe the delete songs file
+                songs_to_delete.close();
+                delete_list.delete();
             }
             out.println("END OF SONG DELETIONS");
-            //wipe the delete songs file
-            songs_to_delete.close();
-            new File(MainActivity.storage+"/SongSync/SongSync_Delete_Song_List.txt").delete();
             
             //tell the view we are downloading the song list
             MainActivity.gui.waiting("Downloading Song List");

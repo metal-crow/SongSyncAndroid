@@ -2,16 +2,14 @@ package gui;
 
 import java.io.File;
 
-import com.example.songsyncandroid.R;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+
+import com.example.songsyncandroid.R;
 
 public class MainActivity extends ActionBarActivity {
     public static final String PREFS_NAME = "SongSyncSettings";
@@ -29,11 +27,7 @@ public class MainActivity extends ActionBarActivity {
         }
         
         //cross activity gui
-        gui=new GUI(this,
-                ((ProgressBar) findViewById(R.id.totalsongssyncedbar)),
-                ((TextView) findViewById(R.id.actioninfo)),
-                ((TextView) findViewById(R.id.songname)),
-                ((ProgressBar) findViewById(R.id.singlesongdownloadprogress)));
+        gui=new GUI(this);
         
         //go to sync layout
         Button syncLayout=(Button) findViewById(R.id.syncLayout);
