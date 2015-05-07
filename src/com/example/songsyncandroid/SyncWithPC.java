@@ -250,19 +250,16 @@ public class SyncWithPC extends Thread{
         while(!recieve.equals("ENDOFLIST")){
             //i dont know why android uses a / for a file delimiter and windows uses a \.
             recieve=recieve.replaceAll("\\\\", "/");
-            System.out.println("recived "+recieve);
+
             //when we receive a song title, check if we already have it in the old list
             //and we are doing a normal sync
-            System.out.println("have all songs "+listOfSongsToRemove.toString()+" type "+type);
             if(listOfSongsToRemove.contains(recieve) && type.equals("N")){
-                System.out.println("have song");
                 //if so, we remove it from the old list. At the end, the songs remaining in the old list no longer exist on the pc and will be removed from the phone
                 listOfSongsToRemove.remove(recieve);
                 //also write this song, which we already have downloaded, to the master list
                 mastersonglistwrite.write(recieve+"\n");
             }
             else{
-                System.out.println("dont have song");
                 //if it isnt in the previous master list, or we are doing a full resync, we need to get it
                 listOfSongsToAdd.add(recieve);
             }
