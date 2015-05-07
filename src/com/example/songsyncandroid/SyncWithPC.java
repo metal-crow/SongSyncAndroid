@@ -64,8 +64,6 @@ public class SyncWithPC extends Thread{
             //write new master song list to txt ONLY when we receive them. This stops sync failures after disconnects.
             //write without calling .close() because if we have a disconnect we still keep the records of the songs that did sync.
             BufferedWriter mastersonglistwrite=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(MainActivity.storage+"/SongSync/SongSync_Song_List.txt"), "utf-8"));
-            //write BOM because we know we're writing unicode
-            mastersonglistwrite.write('\ufeff');
             
             downloadSongList(type, in, mastersonglistwrite);
             
@@ -80,10 +78,11 @@ public class SyncWithPC extends Thread{
                     song=song.substring(0,song.lastIndexOf("."))+SongFileType;
                 }
                 MainActivity.gui.songAction(songid,song.substring(song.lastIndexOf("/")),"Removing song");//tell view we are removing song
-                File deletedsong=new File(MainActivity.storage+"/SongSync/Music/"+song);
+                File deletedsong=new File(MainActivity.storage+"/SongSync/Music"+song);
                 deletedsong.delete();
                 //clean up empty folders
                 //check if parent folder is empty, if so remove, and repeat, moving up a parent folder
+                System.out.println("removing "+deletedsong);
                 while(deletedsong.getParentFile().list().length<1){
                     deletedsong=deletedsong.getParentFile();
                     deletedsong.delete();
@@ -145,8 +144,6 @@ public class SyncWithPC extends Thread{
                 File m3uFile=new File(MainActivity.storage+"/SongSync/PlayLists/"+playlistTitle+".m3u");
                 m3uFile.getParentFile().mkdirs();
                 writeplaylist = new FileWriter(m3uFile);
-                //write BOM because we know we're writing unicode
-                writeplaylist.write('\ufeff');
             }
             
             //when we are receiving the songs
@@ -253,16 +250,19 @@ public class SyncWithPC extends Thread{
         while(!recieve.equals("ENDOFLIST")){
             //i dont know why android uses a / for a file delimiter and windows uses a \.
             recieve=recieve.replaceAll("\\\\", "/");
-            
+            System.out.println("recived "+recieve);
             //when we receive a song title, check if we already have it in the old list
             //and we are doing a normal sync
-            if(listOfSongsToRemove.contains(recieve) && type=="N"){
+            System.out.println("have all songs "+listOfSongsToRemove.toString()+" type "+type);
+            if(listOfSongsToRemove.contains(recieve) && type.equals("N")){
+                System.out.println("have song");
                 //if so, we remove it from the old list. At the end, the songs remaining in the old list no longer exist on the pc and will be removed from the phone
                 listOfSongsToRemove.remove(recieve);
                 //also write this song, which we already have downloaded, to the master list
                 mastersonglistwrite.write(recieve+"\n");
             }
             else{
+                System.out.println("dont have song");
                 //if it isnt in the previous master list, or we are doing a full resync, we need to get it
                 listOfSongsToAdd.add(recieve);
             }

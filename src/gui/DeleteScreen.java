@@ -38,8 +38,6 @@ public class DeleteScreen extends Activity{
         File delete_list=new File(MainActivity.storage+"/SongSync/SongSync_Delete_Song_List.txt");
         try {
             songs_to_delete=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(delete_list,true),"utf-8"));
-            //write BOM because we know we're writing unicode
-            songs_to_delete.write('\ufeff');
         } catch (IOException e1) {
             MainActivity.gui.reportError("Unable to open song deletion file.");
         }
