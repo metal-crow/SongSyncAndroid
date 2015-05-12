@@ -136,7 +136,7 @@ public class SyncWithPC extends Thread{
         String playlistTitle=null;
         FileWriter writeplaylist = null;
         line=in.readLine();
-        while(!line.equals("NO MORE PLAYLISTS")){
+        while(line!=null && !line.equals("NO MORE PLAYLISTS")){
             //receive the title
             if(playlistTitle==null && line!=null && !line.equals("")){
                 playlistTitle=line;
