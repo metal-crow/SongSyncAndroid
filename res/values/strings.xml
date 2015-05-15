@@ -5,4 +5,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
+    <string name="ipaddress">Ip Address</string>
+    <string name="ipaddress_summery">IP address of PC\n0.0.0.0 for USB</string>
 </resources>

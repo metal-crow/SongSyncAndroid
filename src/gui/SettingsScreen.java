@@ -19,7 +19,7 @@ public class SettingsScreen extends ActionBarActivity {
         setContentView(R.layout.settings);
 
         ipaddress = (EditText) findViewById(R.id.ipaddress);
-        ipaddress.setText(getSharedPreferences(MainActivity.PREFS_NAME, 0).getString("ipaddress", ""));//set to storage if it exists
+        ipaddress.setText(getSharedPreferences(MainActivity.PREFS_NAME, 0).getString("ipaddress", "0.0.0.0"));//set to storage if it exists
         
         Button savesettings = (Button) findViewById(R.id.saveSettings);
         
