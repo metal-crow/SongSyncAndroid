@@ -20,7 +20,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="25dp"
         android:layout_toLeftOf="@+id/ipaddress"
-        android:text="IP address of PC\n0.0.0.0 for USB" />
+        android:text="@string/ipaddress_summery" />
 
     <EditText
         android:id="@+id/ipaddress"
