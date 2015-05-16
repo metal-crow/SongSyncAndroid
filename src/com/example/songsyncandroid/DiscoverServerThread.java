@@ -20,6 +20,7 @@ public class DiscoverServerThread extends Thread {
         try {
             socket = new DatagramSocket(9091);
             socket.setBroadcast(true);
+            socket.setSoTimeout(10000);
         } catch (SocketException e1) {
             e1.printStackTrace();
         }
@@ -44,7 +45,7 @@ public class DiscoverServerThread extends Thread {
                     DatagramPacket sent_packet = new DatagramPacket(data_packet.getBytes(), data_packet.length(), inetAddress, 9091);
                     socket.send(sent_packet);
                     
-                    //listen for response from SongSync server
+                    //listen for response from SongSync server until receive result or timeout
                     byte[] buf = new byte[150];
                     DatagramPacket response = new DatagramPacket(buf, buf.length);
                     do{
