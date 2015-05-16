@@ -1,8 +1,16 @@
 package gui;
 
 import java.io.File;
-import android.annotation.SuppressLint;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.net.DhcpInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
@@ -10,13 +18,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+
+import com.example.songsyncandroid.DiscoverServerThread;
 import com.example.songsyncandroid.R;
 
 public class MainActivity extends ActionBarActivity {
     public static final String PREFS_NAME = "SongSyncSettings";
     public static GUI gui;
     public static String storage="/extSdCard";
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +61,7 @@ public class MainActivity extends ActionBarActivity {
         });
         
         //auto-detect and set settings
-        autoDetectSettings();
+        autoDetectSettingsListener();
     }
     
     //add "settings" button to menu
@@ -62,7 +72,6 @@ public class MainActivity extends ActionBarActivity {
     }
     
     //check which menu button pressed
-    @SuppressLint("NewApi")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -77,8 +86,51 @@ public class MainActivity extends ActionBarActivity {
         return true;
     }
     
-    private void autoDetectSettings() {
-        // TODO Auto-generated method stub
+    private void autoDetectSettingsListener() {        
+        //check if plugged into pc/connected to wifi
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.hardware.usb.action.USB_STATE");
+        filter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
         
+        //get udp broadcast inet address
+        WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        DhcpInfo dhcp = wifi.getDhcpInfo();
+
+        int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
+        byte[] quads = new byte[4];
+        for (int k = 0; k < 4; k++){
+          quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
+        }
+        InetAddress addr = null;
+        try {
+            addr = InetAddress.getByAddress(quads);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        
+        //start discover server thread
+        final DiscoverServerThread dst=new DiscoverServerThread(getSharedPreferences(MainActivity.PREFS_NAME, 0),addr);
+        dst.start();
+        
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                SharedPreferences settings = getSharedPreferences(MainActivity.PREFS_NAME, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                
+                //check if usb connected
+                boolean usb=intent.getAction().equals("android.hardware.usb.action.USB_STATE") && intent.getBooleanExtra("connected",false);
+                //check if wifi connected
+                boolean wifi=intent.getAction().equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION) && intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED,false);
+
+                //usb has priority if both are connected
+                if(usb){
+                    editor.putString("ipaddress", "localhost");
+                    editor.commit();
+                }else if(!usb && wifi){
+                    dst.DiscoverServer();
+                }
+            }
+        };
+        registerReceiver(receiver,filter);
     }
 }
