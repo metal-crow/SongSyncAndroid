@@ -12,7 +12,7 @@ public class DiscoverServerThread extends Thread {
     
     private static DatagramSocket socket;
     private static SharedPreferences settings;
-    private boolean discoverServer=false;
+    private boolean discoverServer=true;//trigger on start in case connected to wifi
     private InetAddress inetAddress;
     
     public DiscoverServerThread(SharedPreferences sharedPreferences, InetAddress inetAddress) {
