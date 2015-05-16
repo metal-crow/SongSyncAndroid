@@ -47,6 +47,8 @@ public class SettingsScreen extends ActionBarActivity {
                 
                 if(connection_choice.equals("USB")){
                     editor.putString("ipaddress", "0.0.0.0");
+                    //refresh ip
+                    ipaddress.setText("0.0.0.0");
                 }
                 
 

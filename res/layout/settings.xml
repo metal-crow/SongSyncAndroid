@@ -33,43 +33,34 @@
 
         <requestFocus />
     </EditText>
-
-    <LinearLayout
+    
+    <RadioGroup
+        android:id="@+id/connect_options"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" 
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        >
-	    <RadioGroup
-	        android:id="@+id/connect_options"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content" >
-	        
-	        <RadioButton
-	            android:id="@+id/connect_usb"
-	            android:layout_width="83dp"
-	            android:layout_height="wrap_content"
-	            android:layout_marginLeft="10dp"
-	            android:layout_marginRight="5dp"
-	            android:text="USB" />
-	
-	        <RadioButton
-	            android:id="@+id/connect_wifi"
-	            android:layout_width="84dp"
-	            android:layout_height="wrap_content"
-	            android:layout_marginLeft="5dp"
-	            android:layout_marginRight="0dp"
-	            android:text="Wifi" />
-	        
-	        <RadioButton
-	            android:id="@+id/connect_auto"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:layout_marginLeft="5dp"
-	            android:layout_marginRight="10dp"
-	            android:checked="true"
-	            android:text="Auto Detect" />
-	        
-	    </RadioGroup>
-    </LinearLayout>
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/connect_usb"
+            android:layout_width="wrap_content"
+            android:layout_weight="0.10"
+            android:layout_marginLeft="10dp"
+            android:text="USB" />
+
+        <RadioButton
+            android:id="@+id/connect_wifi"
+            android:layout_width="wrap_content"
+            android:layout_weight="0.06"
+            android:text="Wifi" />
+
+        <RadioButton
+            android:id="@+id/connect_auto"
+            android:layout_width="wrap_content"
+            android:layout_weight="0.10"
+            android:checked="true"
+            android:text="Auto Detect" />
+
+    </RadioGroup>
 
 </RelativeLayout>
