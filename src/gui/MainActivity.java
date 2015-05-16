@@ -122,11 +122,13 @@ public class MainActivity extends ActionBarActivity {
                 //check if wifi connected
                 boolean wifi=intent.getAction().equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION) && intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED,false);
 
+                //check if user set connection type
+                String connection_type=settings.getString("connection_type", "Auto Detect");
                 //usb has priority if both are connected
-                if(usb){
-                    editor.putString("ipaddress", "localhost");
+                if(usb && !connection_type.equals("Wifi")){
+                    editor.putString("ipaddress", "0.0.0.0");
                     editor.commit();
-                }else if(!usb && wifi){
+                }else if(!usb && wifi && !connection_type.equals("USB")){
                     dst.DiscoverServer();
                 }
             }
