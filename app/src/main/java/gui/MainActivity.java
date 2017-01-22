@@ -38,7 +38,7 @@ public class MainActivity extends ActionBarActivity {
         //use internal or external storage
         File head = new File("/storage");
         for(File f:head.listFiles()){
-            if ( f.isDirectory() && f.canRead()  && !f.getAbsolutePath().contains("emulated")){
+            if ( f.isDirectory() && f.canRead() && f.canWrite() && !f.getAbsolutePath().contains("emulated")){
                 storage = f.getAbsolutePath();
                 gui.reportError("Using external storage "+storage);
                 break;
