@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <Button
+        android:id="@+id/saveSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="34dp"
+        android:text="Save" />
+
+    <TextView
+        android:id="@+id/ipaddress_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="75dp"
+        android:text="@string/ipaddress_summery" />
+
+    <EditText
+        android:id="@+id/ipaddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignRight="@+id/ipaddress_label"
+        android:layout_alignTop="@+id/ipaddress_label"
+        android:ems="10"
+        android:inputType="phone" >
+
+        <requestFocus />
+    </EditText>
+    
+    <RadioGroup
+        android:id="@+id/connect_options"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/connect_usb"
+            android:layout_width="wrap_content"
+            android:layout_weight="0.10"
+            android:layout_marginLeft="10dp"
+            android:text="USB" />
+
+        <RadioButton
+            android:id="@+id/connect_wifi"
+            android:layout_width="wrap_content"
+            android:layout_weight="0.06"
+            android:text="Wifi" />
+
+        <RadioButton
+            android:id="@+id/connect_auto"
+            android:layout_width="wrap_content"
+            android:layout_weight="0.10"
+            android:checked="true"
+            android:text="Auto Detect" />
+
+    </RadioGroup>
+
+</RelativeLayout>
