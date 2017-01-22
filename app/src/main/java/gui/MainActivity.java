@@ -25,20 +25,29 @@ import com.example.songsyncandroid.R;
 public class MainActivity extends ActionBarActivity {
     public static final String PREFS_NAME = "SongSyncSettings";
     public static GUI gui;
-    public static String storage="/extSdCard";
+    public static String storage = null;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
-        //use internal or external storage
-        if(!new File(storage).isDirectory()){
-            storage=Environment.getExternalStorageDirectory().getPath();
-        }
-        
+
         //cross activity gui
         gui=new GUI(this);
+
+        //use internal or external storage
+        File head = new File("/storage");
+        for(File f:head.listFiles()){
+            if ( f.isDirectory() && f.canRead()  && !f.getAbsolutePath().contains("emulated")){
+                storage = f.getAbsolutePath();
+                gui.reportError("Using external storage "+storage);
+                break;
+            }
+        }
+        if(storage==null){
+            storage=Environment.getExternalStorageDirectory().getPath();
+            gui.reportError("Using internal storage "+storage);
+        }
         
         //go to sync layout
         Button syncLayout=(Button) findViewById(R.id.syncLayout);
